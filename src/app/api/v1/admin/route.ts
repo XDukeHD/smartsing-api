@@ -5,7 +5,7 @@ import { setSessionCookie } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
   const { email, password } = await request.json();
-  if (await authenticateAdmin(email, password)) {
+  if (await authenticateAdmin(email.trim(), password.trim())) {
     const admin = getAdminUser();
     const token = generateToken({ email: admin.email, username: admin.username });
     const cookie = setSessionCookie(token);
