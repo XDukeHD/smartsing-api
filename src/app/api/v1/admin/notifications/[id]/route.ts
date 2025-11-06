@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminSession } from '@/lib/verifyAdmin';
 import { updateNotification, deleteNotification, getNotificationById } from '@/lib/actions/notificationActions';
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const cookies = request.headers.get('cookie') || '';
   const token = cookies.split(';').find(c => c.trim().startsWith('session='))?.split('=')[1];
   if (!token || !verifyAdminSession(token)) {
@@ -15,7 +16,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (title) updateData.title = title;
     if (message) updateData.message = message;
     if (type && ['normal', 'popup'].includes(type)) updateData.type = type;
-    const notification = await updateNotification(params.id, updateData);
+    const notification = await updateNotification(id, updateData);
     if (!notification) {
       return NextResponse.json({ error: 'Notification not found' }, { status: 404 });
     }
@@ -25,7 +26,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const cookies = request.headers.get('cookie') || '';
   const token = cookies.split(';').find(c => c.trim().startsWith('session='))?.split('=')[1];
   if (!token || !verifyAdminSession(token)) {
@@ -33,7 +35,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   }
 
   try {
-    const notification = await deleteNotification(params.id);
+    const notification = await deleteNotification(id);
     if (!notification) {
       return NextResponse.json({ error: 'Notification not found' }, { status: 404 });
     }

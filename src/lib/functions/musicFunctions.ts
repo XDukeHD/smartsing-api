@@ -59,7 +59,7 @@ export async function searchYouTube(query: string) {
 export async function getLyricsFromGenius(title: string, artist: string) {
   try {
     const options = {
-      apiKey: process.env.GENIUS_ACCESS_TOKEN,
+      apiKey: process.env.GENIUS_ACCESS_TOKEN!,
       title,
       artist,
       optimizeQuery: true,
